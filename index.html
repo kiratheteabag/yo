@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Anime Helper</title>
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: url('background.jpg') center/cover no-repeat;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+}
+#sprite {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 100vh;
+  max-width: 100vw;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+#chatbox {
+  position: relative;
+  width: 90%;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px 12px 0 0;
+  padding: 12px;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+#messages {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #333;
+}
+.message { margin-bottom: 8px; }
+.user { text-align: right; color: #0077cc; }
+.ai { text-align: left; color: #333; }
+#inputForm { display: flex; }
+#input {
+  flex: 1;
+  padding: 8px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+#sendBtn {
+  background: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-left: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+#sendBtn:disabled { background: #ccc; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<img id="sprite" src="sprites/happy.png" alt="AI Anime Girl" />
+
+<div id="chatbox">
+  <div id="messages"></div>
+  <form id="inputForm">
+    <input type="text" id="input" autocomplete="off" placeholder="Say something..." required />
+    <button type="submit" id="sendBtn">Send</button>
+  </form>
+</div>
+
+<script>
+const messagesDiv = document.getElementById('messages');
+const inputForm = document.getElementById('inputForm');
+const inputField = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+const sprite = document.getElementById('sprite');
+
+// Replace with your Vercel project URL
+const API_URL = "https://YOUR_VERCEL_URL.vercel.app/api/chat";
+
+function appendMessage(text, sender) {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + sender;
+  msg.textContent = text;
+  messagesDiv.appendChild(msg);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function sendMessage(message) {
+  appendMessage(message, 'user');
+  inputField.value = '';
+  sendBtn.disabled = true;
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+
+    console.log("Response status:", res.status);
+    const data = await res.json();
+    console.log("Response data:", data);
+
+    appendMessage(data.reply.trim(), 'ai');
+
+    // Simple sprite logic
+    if (data.reply.toLowerCase().includes('sorry') || data.reply.toLowerCase().includes('error')) {
+      sprite.src = 'sprites/sad.png';
+    } else if (data.reply.toLowerCase().includes('angry')) {
+      sprite.src = 'sprites/angry.png';
+    } else if (data.reply.toLowerCase().includes('glitched')) {
+      sprite.src = 'sprites/glitched.png';
+    } else if (data.reply.toLowerCase().includes('pray')) {
+      sprite.src = 'sprites/praying.png';
+    } else {
+      sprite.src = 'sprites/happy.png';
+    }
+
+  } catch (error) {
+    appendMessage("Something went wrong. Please try again.", 'ai');
+    sprite.src = 'sprites/sad.png';
+    console.error(error);
+  } finally {
+    sendBtn.disabled = false;
+    inputField.focus();
+  }
+}
+
+inputForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const message = inputField.value.trim();
+  if (message) sendMessage(message);
+});
+</script>
+
+</body>
+</html>

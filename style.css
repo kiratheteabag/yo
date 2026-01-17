@@ -1,0 +1,48 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background: url("background.jpg") center / cover no-repeat;
+  font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+#girl {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;       /* fullscreen width */
+  height: 100%;      /* fullscreen height */
+  object-fit: cover; /* keeps aspect ratio, fills screen */
+  z-index: -1;       /* behind the chatbox */
+}
+
+#vn-box {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  max-width: 900px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+#name { font-weight: bold; margin-bottom: 6px; color: #e6d9b8; }
+#text { min-height: 70px; margin-bottom: 10px; }
+#input { width: 100%; padding: 8px; font-size: 14px; border: none; outline: none; }
+
+#music-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 6px;
+}
